@@ -1,0 +1,22 @@
+{
+    "name": "locky42/yii2-adminlte-dropdown-table",
+    "description": "AdminLte3 dropdown table",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Maksym Zinchenko",
+            "email": "zinchemko.m.42@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.0",
+        "hail812/yii2-adminlte-widgets": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "locky42\\adminlte\\dropdownTable\\": "src"
+        }
+    }
+}
