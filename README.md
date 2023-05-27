@@ -33,11 +33,25 @@ Once the extension is installed, simply use it in your code by  :
     'ariaExpanded' => false,
     'relations' => [
         'auReleaseNames' => [
+            'title' => 'SubTable title',
             'columns' => [
+                [
+                    'format' => 'html',
+                    'label' => '#',
+                    'attribute' => 'id',
+                ],
                 ...
             ],
             'relations' => [
-                ...
+                'subObject' => [
+                    'title' => 'SubObjects title',
+                    'relations' => [
+                        ...
+                    ],
+                    'columns' => [
+                        ...
+                    ],
+                ],
             ]
         ],
     ],
@@ -47,21 +61,7 @@ Once the extension is installed, simply use it in your code by  :
             'label' => '#',
             'attribute' => 'id',
         ],
-        'name',
-        [
-            'label' => 'Status',
-            'attribute' => 'status',
-            'format' => 'html',
-            'value' => function ($data) {
-                return $data->status ? 'Enable' : 'Disable';
-            },
-        ],
-        [
-            'class' => ActionColumn::class,
-            'urlCreator' => function ($action, $model, $key, $index, $column) {
-                return Url::toRoute([$action, 'id' => $model->id]);
-            }
-        ],
+        ...
     ],
-); ?>
+]); ?>
 ```

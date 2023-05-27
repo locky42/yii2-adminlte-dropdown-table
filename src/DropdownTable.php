@@ -8,12 +8,42 @@ use yii\grid\Column;
 use yii\helpers\Html;
 use yii\widgets\BaseListView;
 use yii\grid\GridView;
+use Throwable;
 
 class DropdownTable extends GridView
 {
     public $ariaExpanded = false;
     public $relations = [];
+    public $title = null;
+    public $layout = "{title}\n{summary}\n{items}\n{pager}";
 
+    /**
+     * @param $name
+     * @return bool|string
+     */
+    public function renderSection($name)
+    {
+        switch ($name) {
+            case '{title}':
+                return $this->renderTitle();
+            default:
+                return parent::renderSection($name);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function renderTitle()
+    {
+        return $this->title ? '<div class="pb-0 mb-0"><h5 class="mb-0">' . $this->title . '</h5></div>' : '';
+    }
+    /**
+     * @param $model
+     * @param $key
+     * @param $index
+     * @return string
+     */
     public function renderTableRow($model, $key, $index)
     {
         $cells = [];
@@ -33,11 +63,19 @@ class DropdownTable extends GridView
         return $row . $this->getSubTable($model);
     }
 
+    /**
+     * @param $model
+     * @return string
+     * @throws Throwable
+     */
     protected function getSubTable($model)
     {
         $data = '';
         foreach ($this->relations as $field => $relation) {
             $objects = $model->$field;
+            if (empty($objects)) {
+                continue;
+            }
             $first = $objects[array_key_first($objects)];
             $class = $first::class;
             $primaryKey = $class::primaryKey();
@@ -59,6 +97,7 @@ class DropdownTable extends GridView
             ]));
         }
 
-        return Html::tag('tr', '<td colspan="' . count($this->columns) . '">' . $data . '</td>', ['class' => 'expandable-body']);
+        $td = Html::tag('td', $data, ['colspan' => count($this->columns)]);
+        return Html::tag('tr', $td, ['class' => 'expandable-body']);
     }
 }
