@@ -9,13 +9,18 @@ use yii\helpers\Html;
 use yii\widgets\BaseListView;
 use yii\grid\GridView;
 use Throwable;
+use yii;
+use locky42\adminlte\dropdownTable\helpers\TreeHelper;
+use locky42\adminlte\dropdownTable\DropdownDataProvider;
 
 class DropdownTable extends GridView
 {
-    public $ariaExpanded = false;
+    public $ariaExpanded = 'false';
     public $relations = [];
     public $title = null;
     public $layout = "{title}\n{summary}\n{items}\n{pager}";
+    public $parent = null;
+    public $currentId = null;
 
     /**
      * @param $name
@@ -56,11 +61,62 @@ class DropdownTable extends GridView
         } else {
             $options = $this->rowOptions;
         }
+
+        $subTable = $this->getSubTable($model);
+        $this->getAriaExpanded($key, $model);
+
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
         $options['data-widget'] = 'expandable-table';
-        $options['aria-expanded'] = $this->ariaExpanded ? 'true' : 'false';
+        $options['aria-expanded'] = $this->ariaExpanded;
         $row = Html::tag('tr', implode('', $cells), $options);
-        return $row . $this->getSubTable($model);
+        return $row . $subTable;
+    }
+
+    /**
+     * @param $key
+     * @param $model
+     * @return void
+     */
+    protected function getAriaExpanded($key, $model)
+    {
+        $id = $this->getCurrentId();
+
+        $isActive = in_array($id, TreeHelper::getId($this)) &&
+        (
+            yii::$app->request->get("dp-$id-sort") || yii::$app->request->get("dp-$id-page")
+        ) ? : false;
+
+        $this->setParentExpanded($isActive);
+    }
+
+    /**
+     * @param $expanded
+     * @return void
+     */
+    public function setAriaExpanded($expanded)
+    {
+        $this->ariaExpanded = $expanded ? 'true' : 'false';
+    }
+
+    /**
+     * @param $expanded
+     * @return void
+     */
+    public function setParentExpanded($expanded)
+    {
+        $this->parent?->setAriaExpanded($expanded);
+        $this->parent?->setParentExpanded($expanded);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentId()
+    {
+        if ($this->currentId === null) {
+            $this->currentId = (int) str_replace($this::$autoIdPrefix, null, $this->options['id']);
+        }
+        return $this->currentId;
     }
 
     /**
@@ -86,7 +142,7 @@ class DropdownTable extends GridView
             }
             $query = $class::find();
 
-            $dataProvider = new ActiveDataProvider([
+            $dataProvider = new DropdownDataProvider([
                 'query' => $query,
             ]);
 
@@ -94,6 +150,7 @@ class DropdownTable extends GridView
 
             $data .= DropdownTable::widget(array_merge($relation, [
                 'dataProvider' => $dataProvider,
+                'parent' => $this,
             ]));
         }
 

@@ -34,6 +34,7 @@ Once the extension is installed, simply use it in your code by  :
     'relations' => [
         'auReleaseNames' => [
             'title' => 'SubTable title',
+            'ariaExpanded' => false,
             'columns' => [
                 [
                     'format' => 'html',
@@ -64,4 +65,16 @@ Once the extension is installed, simply use it in your code by  :
         ...
     ],
 ]); ?>
+```
+
+In your controller $dataProvider must be a `locky42\adminlte\dropdownTable\DropdownDataProvider`
+```php
+use \locky42\adminlte\dropdownTable\DropdownDataProvider;
+
+...
+
+$dataProvider = new DropdownDataProvider([
+    'query' => $query,
+    ...
+]);
 ```
