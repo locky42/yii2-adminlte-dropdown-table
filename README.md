@@ -32,7 +32,7 @@ Once the extension is installed, simply use it in your code by  :
     'dataProvider' => $dataProvider,
     'ariaExpanded' => false,
     'relations' => [
-        'auReleaseNames' => [
+        'subObjectFirstLevel' => [
             'title' => 'SubTable title',
             'ariaExpanded' => false,
             'columns' => [
@@ -44,7 +44,7 @@ Once the extension is installed, simply use it in your code by  :
                 ...
             ],
             'relations' => [
-                'subObject' => [
+                'subObjectSecondLevel' => [
                     'title' => 'SubObjects title',
                     'relations' => [
                         ...
@@ -63,6 +63,10 @@ Once the extension is installed, simply use it in your code by  :
             'attribute' => 'id',
         ],
         ...
+        'urlCreator' => function ($action, $model, $key, $index, $column) {
+            return Url::toRoute(['/{url}}/' . $action, 'id' => $model->id]);
+        },
+        'buttonOptions' => ['target' => '_blank'],
     ],
 ]); ?>
 ```

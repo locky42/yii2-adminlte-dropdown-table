@@ -19,6 +19,7 @@ class DropdownTable extends GridView
     public $relations = [];
     public $title = null;
     public $layout = "{title}\n{summary}\n{items}\n{pager}";
+    /** @var self|null */
     public $parent = null;
     public $currentId = null;
 
@@ -63,7 +64,7 @@ class DropdownTable extends GridView
         }
 
         $subTable = $this->getSubTable($model);
-        $this->getAriaExpanded($key, $model);
+        $this->getAriaExpanded();
 
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
         $options['data-widget'] = 'expandable-table';
@@ -73,20 +74,18 @@ class DropdownTable extends GridView
     }
 
     /**
-     * @param $key
-     * @param $model
      * @return void
      */
-    protected function getAriaExpanded($key, $model)
+    protected function getAriaExpanded()
     {
         $id = $this->getCurrentId();
 
-        $isActive = in_array($id, TreeHelper::getId($this)) &&
+        $isActive = in_array($id, TreeHelper::getParentsIds($this)) &&
         (
             yii::$app->request->get("dp-$id-sort") || yii::$app->request->get("dp-$id-page")
         ) ? : false;
 
-        $this->setParentExpanded($isActive);
+        $this::setParentExpanded($this, $isActive);
     }
 
     /**
@@ -99,13 +98,17 @@ class DropdownTable extends GridView
     }
 
     /**
+     * @param $object
      * @param $expanded
      * @return void
      */
-    public function setParentExpanded($expanded)
+    public static function setParentExpanded(?self $object, $expanded)
     {
-        $this->parent?->setAriaExpanded($expanded);
-        $this->parent?->setParentExpanded($expanded);
+        $object?->parent?->setAriaExpanded($expanded);
+
+        if ($object?->parent) {
+            $object?->parent::setParentExpanded($object?->parent, $expanded);
+        }
     }
 
     /**

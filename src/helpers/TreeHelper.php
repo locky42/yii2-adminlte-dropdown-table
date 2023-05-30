@@ -10,7 +10,7 @@ class TreeHelper
      * @param DropdownTable|null $item
      * @return int[]
      */
-    public static function getId(?DropdownTable $item)
+    public static function getParentsIds(?DropdownTable $item)
     {
         $array = self::getParents($item);
         $ids = [0];
