@@ -2,8 +2,7 @@ AdminLte3 dropdown table
 ========================
 AdminLte3 dropdown table
 
-Installation
-------------
+## Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
@@ -13,17 +12,11 @@ Either run
 php composer.phar require --prefer-dist locky42/yii2-adminlte-dropdown-table "*"
 ```
 
-or add
+or add `"locky42/yii2-adminlte-dropdown-table": "*"` to the require section of your `composer.json` file.
 
-```
-"locky42/yii2-adminlte-dropdown-table": "*"
-```
+## Usage
 
-to the require section of your `composer.json` file.
-
-
-Usage
------
+### Static
 
 Once the extension is installed, simply use it in your code by  :
 
@@ -82,3 +75,29 @@ $dataProvider = new DropdownDataProvider([
     ...
 ]);
 ```
+
+### Ajax
+
+Once the extension is installed, simply use it in your code by  :
+
+```php
+<?= \locky42\adminlte\dropdownTable\AutoloadExample::DropdownTable(
+    'dataProvider' => $dataProvider,
+    'ajax' => true,
+    'ajaxUrl' => '{url}',
+    'relations' => [
+        'subObjectFirstLevel' => [
+            'title' => 'SubTable title',
+            'ajax' => true,
+            'ajaxUrl' => '{url}',
+            ...
+        ],
+    ],
+    'columns' => [
+        ...
+    ],
+]); ?>
+```
+
+You must have a controller with the extension `locky42\adminlte\dropdownTable\controllers\rest\TableController`.
+This controller is used to url creation and data rendering.
