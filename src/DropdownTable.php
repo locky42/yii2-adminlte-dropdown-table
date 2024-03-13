@@ -28,6 +28,8 @@ class DropdownTable extends GridView
     public $parent = null;
     public $currentId = null;
 
+    protected int $relationsTotalCount = 0;
+
     public function run()
     {
         $this->tableOptions['class'] = $this->tableOptions['class'] . ' dropdown-table';
@@ -86,6 +88,11 @@ class DropdownTable extends GridView
         $options['data-ajax'] = $this->getAjax();
         $options['data-ajax-url'] = $this->ajaxUrl;
         $options['aria-expanded'] = $this->ariaExpanded;
+
+        if ($this->relations && !$this->relationsTotalCount) {
+            $options['class'] = 'relations-empty';
+        }
+
         $row = Html::tag('tr', implode('', $cells), $options);
         return $row . $subTable;
     }
@@ -166,6 +173,7 @@ class DropdownTable extends GridView
         foreach ($this->relations as $field => $relation) {
             $objects = $model->$field;
             $totalCount = count($objects);
+            $this->relationsTotalCount += $totalCount;
             if (!$this->ajax) {
                 if (!$totalCount) {
                     continue;
