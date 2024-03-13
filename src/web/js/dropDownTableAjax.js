@@ -1,16 +1,26 @@
 $(document).on('click', '[data-ajax="true"]', function (event) {
     $this = $(this);
-    if ($this.attr('aria-expanded') ==='false') {
+    if ($this.attr('aria-expanded') === 'false') {
         getData($this);
     }
 });
 
 $(document).on('click', '.dropdown-table a', function (event) {
-    var container = $(this).closest('.expandable-body');
-    var dataBlock = container.prev('[data-ajax="true"]');
-    getData(dataBlock, this.href);
-    event.stopPropagation();
-    event.preventDefault();
+    if (!$(this).hasClass('no-ajax')) {
+        var container = $(this).closest('.expandable-body');
+        var dataBlock = container.prev('[data-ajax="true"]');
+        if (container.length !== 0 && dataBlock.length !== 0) {
+            getData(dataBlock, this.href);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    }
+});
+
+$(document).ready(function() {
+    $('[aria-expanded="true"]').each(function() {
+        getData($(this));
+    });
 });
 
 var getData = function ($this, dataUrl = null) {

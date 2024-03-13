@@ -23,7 +23,8 @@ class DropdownTable extends GridView
     public bool $ajax = false;
     public ?string $ajaxUrl = null;
     public $title = null;
-    public $layout = "{title}\n{summary}\n{items}\n{pager}";
+    public $custom_content = null;
+    public $layout = "{title}\n{custom_content}\n{summary}\n{items}\n{pager}";
     /** @var self|null */
     public $parent = null;
     public $currentId = null;
@@ -47,6 +48,8 @@ class DropdownTable extends GridView
         switch ($name) {
             case '{title}':
                 return $this->renderTitle();
+            case '{custom_content}':
+                return $this->custom_content ? $this->custom_content : '';
             default:
                 return parent::renderSection($name);
         }
@@ -79,7 +82,9 @@ class DropdownTable extends GridView
         }
 
         $subTable = $this->getSubTable($model);
-        $this->getAriaExpanded();
+        $this->setAriaExpanded($this->ariaExpanded);
+
+//        dd($this->ariaExpanded);
 
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
         $options['data-relations'] = json_encode($this->relations);
@@ -91,25 +96,12 @@ class DropdownTable extends GridView
 
         if ($this->relations && !$this->relationsTotalCount) {
             $options['class'] = 'relations-empty';
+        } elseif (!$this->relations) {
+            $options['class'] = 'no-relations';
         }
 
         $row = Html::tag('tr', implode('', $cells), $options);
         return $row . $subTable;
-    }
-
-    /**
-     * @return void
-     */
-    protected function getAriaExpanded()
-    {
-        $id = $this->getCurrentId();
-
-        $isActive = in_array($id, TreeHelper::getParentsIds($this)) &&
-        (
-            yii::$app->request->get("dp-$id-sort") || yii::$app->request->get("dp-$id-page")
-        ) ? : false;
-
-        self::setParentExpanded($this, $isActive);
     }
 
     /**
@@ -126,6 +118,21 @@ class DropdownTable extends GridView
     protected function isAjax()
     {
         return filter_var($this->ajax, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getAriaExpanded()
+    {
+        $id = $this->getCurrentId();
+
+        $isActive = in_array($id, TreeHelper::getParentsIds($this)) &&
+        (
+            yii::$app->request->get("dp-$id-sort") || yii::$app->request->get("dp-$id-page")
+        ) ? : false;
+
+        self::setParentExpanded($this, $isActive);
     }
 
     /**

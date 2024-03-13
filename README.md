@@ -24,9 +24,11 @@ Once the extension is installed, simply use it in your code by  :
 <?= \locky42\adminlte\dropdownTable\AutoloadExample::DropdownTable(
     'dataProvider' => $dataProvider,
     'ariaExpanded' => false,
+    'custom_content' => 'custom content',
     'relations' => [
         'subObjectFirstLevel' => [
             'title' => 'SubTable title',
+            'custom_content' => 'custom content',
             'ariaExpanded' => false,
             'columns' => [
                 [
@@ -85,11 +87,13 @@ Once the extension is installed, simply use it in your code by  :
     'dataProvider' => $dataProvider,
     'ajax' => true,
     'ajaxUrl' => '{url}',
+    'custom_content' => 'custom content',
     'relations' => [
         'subObjectFirstLevel' => [
             'title' => 'SubTable title',
             'ajax' => true,
             'ajaxUrl' => '{url}',
+            'custom_content' => 'custom content',
             ...
         ],
     ],
@@ -99,5 +103,10 @@ Once the extension is installed, simply use it in your code by  :
 ]); ?>
 ```
 
+## Other imformation
+
 You must have a controller with the extension `locky42\adminlte\dropdownTable\controllers\rest\TableController`.
 This controller is used to url creation and data rendering.
+
+Custom content is displayed after the title.
+If you have links in your custom content, you must add the class `no-ajax` to the links.
