@@ -84,8 +84,6 @@ class DropdownTable extends GridView
         $subTable = $this->getSubTable($model);
         $this->setAriaExpanded($this->ariaExpanded);
 
-//        dd($this->ariaExpanded);
-
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
         $options['data-relations'] = json_encode($this->relations);
         $options['data-model'] = $model::class;
