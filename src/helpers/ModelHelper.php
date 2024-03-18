@@ -2,13 +2,17 @@
 
 namespace locky42\adminlte\dropdownTable\helpers;
 
+use yii\db\ActiveQuery;
+use yii\db\ActiveQueryInterface;
+use yii\db\ActiveRecord;
+
 class ModelHelper
 {
     /**
-     * @param string $model
+     * @param string|object $model
      * @return false|string
      */
-    public static function getPrimaryKey(string|object $model)
+    public static function getPrimaryKey(string|object $model): bool|string
     {
         return $model::primaryKey()[0];
     }
@@ -16,18 +20,18 @@ class ModelHelper
     /**
      * @param string|object $model
      * @param $relation
-     * @return mixed
+     * @return ActiveQuery|ActiveQueryInterface|null
      */
-    public static function getRelation(string|object $model, $relation)
+    public static function getRelation(string|object $model, $relation): ActiveQueryInterface|ActiveQuery|null
     {
         return self::getModel($model)->getRelation($relation);
     }
 
     /**
      * @param string|object $model
-     * @return mixed|object|string
+     * @return ActiveRecord
      */
-    public static function getModel(string|object $model)
+    public static function getModel(string|object $model): ActiveRecord
     {
         if (is_string($model)) {
             $model = new $model;
@@ -39,13 +43,11 @@ class ModelHelper
      * @param string|object $model
      * @param $relation
      * @param $id
-     * @return mixed
+     * @return ActiveQuery
      */
-    public static function getRelationQuery(string|object $model, $relation, $id)
+    public static function getRelationQuery(string|object $model, $relation, $id): ActiveQuery
     {
         $relationInfo = self::getRelation($model, $relation);
-        $query = $relationInfo->modelClass::find()->where([array_flip($relationInfo->link)[self::getPrimaryKey($model)] => $id]);
-
-        return $query;
+        return $relationInfo->modelClass::find()->where([array_flip($relationInfo->link)[self::getPrimaryKey($model)] => $id]);
     }
 }

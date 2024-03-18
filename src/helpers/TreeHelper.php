@@ -10,7 +10,7 @@ class TreeHelper
      * @param DropdownTable|null $item
      * @return int[]
      */
-    public static function getParentsIds(?DropdownTable $item)
+    public static function getParentsIds(?DropdownTable $item): array
     {
         $array = self::getParents($item);
         $ids = [0];
@@ -25,21 +25,21 @@ class TreeHelper
      * @param DropdownTable|null $item
      * @return array
      */
-    protected static function getParents(?DropdownTable $item)
+    protected static function getParents(?DropdownTable $item): array
     {
         $result = [];
         if ($item?->parent && $id = $item->currentId) {
-            array_push($result, [
+            $result[] = [
                 'parent' => $item->parent->getCurrentId(),
                 'id' => $id,
-            ]);
+            ];
 
             $result = array_merge($result, self::getParents($item->parent));
         } elseif ($id = $item?->getCurrentId()) {
-            array_push($result, [
+            $result[] = [
                 'parent' => 0,
                 'id' => $id,
-            ]);
+            ];
         }
 
         return $result;

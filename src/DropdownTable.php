@@ -2,36 +2,32 @@
 
 namespace locky42\adminlte\dropdownTable;
 
-use common\models\au\AuBrands;
-use yii\data\ActiveDataProvider;
+use Closure;
+use yii\db\ActiveRecord;
 use yii\grid\Column;
-use yii\grid\GridViewAsset;
 use yii\helpers\Html;
-use yii\helpers\Json;
-use yii\widgets\BaseListView;
 use yii\grid\GridView;
 use Throwable;
 use yii;
 use locky42\adminlte\dropdownTable\helpers\TreeHelper;
-use locky42\adminlte\dropdownTable\DropdownDataProvider;
 use locky42\adminlte\dropdownTable\assets\AdminLteDropdownTableAsset;
 
 class DropdownTable extends GridView
 {
-    public $ariaExpanded = 'false';
+    public string|bool|int $ariaExpanded = 'false';
     public array $relations = [];
     public bool $ajax = false;
     public ?string $ajaxUrl = null;
-    public $title = null;
+    public string|null $title = null;
     public $custom_content = null;
     public $layout = "{title}\n{custom_content}\n{summary}\n{items}\n{pager}";
     /** @var self|null */
-    public $parent = null;
-    public $currentId = null;
+    public ?DropdownTable $parent = null;
+    public ?int $currentId = null;
 
     protected int $relationsTotalCount = 0;
 
-    public function run()
+    public function run(): void
     {
         $this->tableOptions['class'] = $this->tableOptions['class'] . ' dropdown-table';
         $view = $this->getView();
@@ -43,32 +39,31 @@ class DropdownTable extends GridView
      * @param $name
      * @return bool|string
      */
-    public function renderSection($name)
+    public function renderSection($name): bool|string
     {
-        switch ($name) {
-            case '{title}':
-                return $this->renderTitle();
-            case '{custom_content}':
-                return $this->custom_content ? $this->custom_content : '';
-            default:
-                return parent::renderSection($name);
-        }
+        return match ($name) {
+            '{title}' => $this->renderTitle(),
+            '{custom_content}' => $this->custom_content ?: '',
+            default => parent::renderSection($name),
+        };
     }
 
     /**
      * @return string
      */
-    public function renderTitle()
+    public function renderTitle(): string
     {
         return $this->title ? '<div class="pb-0 mb-0"><h5 class="mb-0">' . $this->title . '</h5></div>' : '';
     }
+
     /**
      * @param $model
      * @param $key
      * @param $index
      * @return string
+     * @throws Throwable
      */
-    public function renderTableRow($model, $key, $index)
+    public function renderTableRow($model, $key, $index): string
     {
         $cells = [];
         /* @var $column Column */
@@ -105,7 +100,7 @@ class DropdownTable extends GridView
     /**
      * @return string|null
      */
-    protected function getAjax()
+    protected function getAjax(): ?string
     {
         return var_export($this->isAjax(), true);
     }
@@ -113,22 +108,22 @@ class DropdownTable extends GridView
     /**
      * @return bool
      */
-    protected function isAjax()
+    protected function isAjax(): bool
     {
         return filter_var($this->ajax, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
-     * @return string|null
+     * @return void
      */
-    protected function getAriaExpanded()
+    protected function getAriaExpanded(): void
     {
         $id = $this->getCurrentId();
 
         $isActive = in_array($id, TreeHelper::getParentsIds($this)) &&
-        (
-            yii::$app->request->get("dp-$id-sort") || yii::$app->request->get("dp-$id-page")
-        ) ? : false;
+            (
+                yii::$app->request->get("dp-$id-sort") || yii::$app->request->get("dp-$id-page")
+            );
 
         self::setParentExpanded($this, $isActive);
     }
@@ -137,29 +132,29 @@ class DropdownTable extends GridView
      * @param $expanded
      * @return void
      */
-    public function setAriaExpanded($expanded)
+    public function setAriaExpanded($expanded): void
     {
         $this->ariaExpanded = var_export(filter_var($expanded, FILTER_VALIDATE_BOOLEAN), true);
     }
 
     /**
-     * @param $object
+     * @param DropdownTable|null $object
      * @param $expanded
      * @return void
      */
-    public static function setParentExpanded(?self $object, $expanded)
+    public static function setParentExpanded(?self $object, $expanded): void
     {
         $object?->parent?->setAriaExpanded($expanded);
 
         if ($object?->parent) {
-            $object?->parent::setParentExpanded($object?->parent, $expanded);
+            $object?->parent::setParentExpanded($object->parent, $expanded);
         }
     }
 
     /**
      * @return int
      */
-    public function getCurrentId()
+    public function getCurrentId(): int
     {
         if ($this->currentId === null) {
             $this->currentId = (int) str_replace(self::$autoIdPrefix, null, $this->options['id']);
@@ -172,7 +167,7 @@ class DropdownTable extends GridView
      * @return string
      * @throws Throwable
      */
-    protected function getSubTable($model)
+    protected function getSubTable($model): string
     {
         $data = '';
         foreach ($this->relations as $field => $relation) {
@@ -185,6 +180,8 @@ class DropdownTable extends GridView
                 }
 
                 $first = $objects[array_key_first($objects)];
+
+                /** @var ActiveRecord $class */
                 $class = $first::class;
                 $primaryKey = $class::primaryKey();
                 $ids = [];

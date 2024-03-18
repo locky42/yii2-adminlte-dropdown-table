@@ -2,6 +2,7 @@
 
 namespace locky42\adminlte\dropdownTable\controllers\rest;
 
+use Throwable;
 use yii;
 use yii\rest\Controller;
 use locky42\adminlte\dropdownTable\DropdownTable;
@@ -12,9 +13,9 @@ class TableController extends Controller
 {
     /**
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $modelClass = yii::$app->request->post('model');
         /** @var $model yii\db\ActiveRecord */
@@ -22,8 +23,6 @@ class TableController extends Controller
 
         $id = yii::$app->request->post('id');
         $relations = yii::$app->request->post('relations');
-
-        $modelPrimaryKey = ModelHelper::getPrimaryKey($model);
 
         $result = '';
         foreach ($relations as $relation => $relationData) {
@@ -43,8 +42,8 @@ class TableController extends Controller
 
     /**
      * @param $action
-     * @param $model
-     * @param $params
+     * @param null $model
+     * @param array $params
      * @return void
      */
     public function checkAccess($action, $model = null, $params = [])
