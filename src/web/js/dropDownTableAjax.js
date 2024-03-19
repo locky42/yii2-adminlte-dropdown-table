@@ -6,7 +6,7 @@ $(document).on('click', '[data-ajax="true"]', function (event) {
 });
 
 $(document).on('click', '.dropdown-table a', function (event) {
-    if (!$(this).hasClass('no-ajax')) {
+    if (!$(this).hasClass('no-ajax') && !$(this).data('action')) {
         var container = $(this).closest('.expandable-body');
         var dataBlock = container.prev('[data-ajax="true"]');
         if (container.length !== 0 && dataBlock.length !== 0) {

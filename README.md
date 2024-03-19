@@ -80,7 +80,7 @@ $dataProvider = new DropdownDataProvider([
 
 ### Ajax
 
-Once the extension is installed, simply use it in your code by  :
+Once the extension is installed, simply use it in your code by:
 
 ```php
 <?= \locky42\adminlte\dropdownTable\AutoloadExample::DropdownTable(
@@ -101,6 +101,49 @@ Once the extension is installed, simply use it in your code by  :
         ...
     ],
 ]); ?>
+```
+
+### Custom content
+
+You can add custom content to the dropdown table. This content is displayed after the title.
+
+```php
+'custom_content' => 'custom content',
+```
+
+or with a callback
+
+```php
+'custom_content' => function ($model) {
+    return 'custom content';
+},
+```
+
+### Relations
+
+You can add relations to the dropdown table. This relations are displayed after the custom content.
+
+```php
+'relations' => [
+    'subObjectFirstLevel' => [
+        'title' => 'SubTable title',
+        'custom_content' => 'custom content',
+        'columns' => [
+            ...
+        ],
+        'relations' => [
+            'subObjectSecondLevel' => [
+                'title' => 'SubObjects title',
+                'relations' => [
+                    ...
+                ],
+                'columns' => [
+                    ...
+                ],
+            ],
+        ]
+    ],
+],
 ```
 
 ## Other imformation

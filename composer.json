@@ -12,7 +12,8 @@
     ],
     "require": {
         "yiisoft/yii2": "~2.0.0",
-        "hail812/yii2-adminlte-widgets": "*"
+        "hail812/yii2-adminlte-widgets": "*",
+        "opis/closure": "^3.6"
     },
     "autoload": {
         "psr-4": {

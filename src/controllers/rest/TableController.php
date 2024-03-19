@@ -8,6 +8,7 @@ use yii\rest\Controller;
 use locky42\adminlte\dropdownTable\DropdownTable;
 use locky42\adminlte\dropdownTable\DropdownDataProvider;
 use locky42\adminlte\dropdownTable\helpers\ModelHelper;
+use locky42\adminlte\dropdownTable\helpers\FormatHelper;
 
 class TableController extends Controller
 {
@@ -22,7 +23,7 @@ class TableController extends Controller
         $model = new $modelClass;
 
         $id = yii::$app->request->post('id');
-        $relations = yii::$app->request->post('relations');
+        $relations = FormatHelper::unserialize(yii::$app->request->post('relations'));
 
         $result = '';
         foreach ($relations as $relation => $relationData) {

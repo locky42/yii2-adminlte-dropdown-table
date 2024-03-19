@@ -10,6 +10,7 @@ use yii\grid\GridView;
 use Throwable;
 use yii;
 use locky42\adminlte\dropdownTable\helpers\TreeHelper;
+use locky42\adminlte\dropdownTable\helpers\FormatHelper;
 use locky42\adminlte\dropdownTable\assets\AdminLteDropdownTableAsset;
 
 class DropdownTable extends GridView
@@ -37,15 +38,28 @@ class DropdownTable extends GridView
 
     /**
      * @param $name
-     * @return bool|string
+     * @return bool|mixed|string|null
      */
-    public function renderSection($name): bool|string
+    public function renderSection($name): mixed
     {
         return match ($name) {
             '{title}' => $this->renderTitle(),
-            '{custom_content}' => $this->custom_content ?: '',
+            '{custom_content}' => $this->renderCustomContent(),
             default => parent::renderSection($name),
         };
+    }
+
+    public function renderCustomContent()
+    {
+        $model = $this->dataProvider->getModels()[$this->getCurrentId()];
+
+        if ($this->custom_content instanceof Closure) {
+            $custom_content = call_user_func($this->custom_content, $model);
+        } else {
+            $custom_content = $this->custom_content;
+        }
+
+        return $custom_content;
     }
 
     /**
@@ -80,7 +94,7 @@ class DropdownTable extends GridView
         $this->setAriaExpanded($this->ariaExpanded);
 
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
-        $options['data-relations'] = json_encode($this->relations);
+        $options['data-relations'] = FormatHelper::serialize($this->relations);
         $options['data-model'] = $model::class;
         $options['data-widget'] = 'expandable-table';
         $options['data-ajax'] = $this->getAjax();
