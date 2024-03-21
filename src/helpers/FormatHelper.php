@@ -34,4 +34,24 @@ class FormatHelper
         }
         return $result;
     }
+
+    public static function getUrl($url)
+    {
+        $result = $url;
+        if (str_contains($result, 'http')) {
+            $result = parse_url($result, PHP_URL_PATH);
+        }
+
+        return $result;
+    }
+
+    public static function getUrlParams($url)
+    {
+        $result = [];
+        if (str_contains($url, 'http')) {
+            $result = parse_url($url, PHP_URL_QUERY);
+            parse_str($result, $result);
+        }
+        return $result;
+    }
 }

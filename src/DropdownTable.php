@@ -30,6 +30,11 @@ class DropdownTable extends GridView
 
     public function run(): void
     {
+        if (!$this->isAjax()) {
+            $this->dataProvider->sort->params = FormatHelper::getUrlParams(yii::$app->request->referrer);
+            $this->dataProvider->sort->route = FormatHelper::getUrl(yii::$app->request->referrer);
+        }
+
         $this->tableOptions['class'] = $this->tableOptions['class'] . ' dropdown-table';
         $view = $this->getView();
         AdminLteDropdownTableAsset::register($view);
@@ -38,9 +43,9 @@ class DropdownTable extends GridView
 
     /**
      * @param $name
-     * @return bool|mixed|string|null
+     * @return string|bool
      */
-    public function renderSection($name): mixed
+    public function renderSection($name): string|bool
     {
         return match ($name) {
             '{title}' => $this->renderTitle(),
@@ -51,7 +56,14 @@ class DropdownTable extends GridView
 
     public function renderCustomContent()
     {
-        $model = $this->dataProvider->getModels()[$this->getCurrentId()];
+        $models = $this->dataProvider->getModels();
+        if (isset($models[$this->getCurrentId()])) {
+            $model = $models[$this->getCurrentId()];
+        } else {
+            $modelClass = yii::$app->request->post('model');
+            $id = yii::$app->request->post('id');
+            $model = $modelClass::findOne($id);
+        }
 
         if ($this->custom_content instanceof Closure) {
             $custom_content = call_user_func($this->custom_content, $model);
@@ -129,6 +141,7 @@ class DropdownTable extends GridView
 
     /**
      * @return void
+     * todo: remove this method
      */
     protected function getAriaExpanded(): void
     {
