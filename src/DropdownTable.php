@@ -24,6 +24,8 @@ class DropdownTable extends GridView
     public $layout = "{title}\n{custom_content}\n{summary}\n{items}\n{pager}";
     /** @var self|null */
     public ?DropdownTable $parent = null;
+
+    /** @deprecated */
     public ?int $currentId = null;
 
     protected int $relationsTotalCount = 0;
@@ -60,9 +62,9 @@ class DropdownTable extends GridView
         if (isset($models[$this->getCurrentId()])) {
             $model = $models[$this->getCurrentId()];
         } else {
-            $modelClass = yii::$app->request->post('model');
-            $id = yii::$app->request->post('id');
-            $model = $modelClass::findOne($id);
+            $modelClass = $this->dataProvider->query->modelClass;
+            $model = $this->dataProvider->query->one() ?? new $modelClass;
+            $model->load($this->dataProvider->query->where, '');
         }
 
         if ($this->custom_content instanceof Closure) {

@@ -119,6 +119,8 @@ or with a callback
 },
 ```
 
+`$model` class is the same as the dataProvider.
+
 ### Relations
 
 You can add relations to the dropdown table. This relations are displayed after the custom content.
@@ -146,7 +148,7 @@ You can add relations to the dropdown table. This relations are displayed after 
 ],
 ```
 
-## Other imformation
+## Other information
 
 You must have a controller with the extension `locky42\adminlte\dropdownTable\controllers\rest\TableController`.
 This controller is used to url creation and data rendering.
