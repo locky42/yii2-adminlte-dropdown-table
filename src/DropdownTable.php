@@ -45,9 +45,9 @@ class DropdownTable extends GridView
 
     /**
      * @param $name
-     * @return string|bool
+     * @return bool|mixed|string|null
      */
-    public function renderSection($name): string|bool
+    public function renderSection($name)
     {
         return match ($name) {
             '{title}' => $this->renderTitle(),
